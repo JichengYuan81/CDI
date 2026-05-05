@@ -23,12 +23,11 @@ class FSCILTrainer(Trainer):
             self.transform = None
             self.num_trans = 0
 
-        # 根据数据集动态设置因果模块维度
         if args.dataset == 'cifar100':
             args.causal_z_dim = 32
             args.causal_class_dim = 16
             args.causal_style_dim = 16
-        else:  # mini_imagenet或cub200
+        else:
             args.causal_z_dim = 128
             args.causal_class_dim = 64
             args.causal_style_dim = 64
@@ -70,8 +69,6 @@ class FSCILTrainer(Trainer):
     def train(self):
         args = self.args
         t_start_time = time.time()
-
-        # 在训练开始时就创建保存目录
         os.makedirs(self.args.save_path, exist_ok=True)
 
         # init train statistics
@@ -81,26 +78,20 @@ class FSCILTrainer(Trainer):
             train_set, trainloader, testloader = self.get_dataloader(session)
             self.model.load_state_dict(self.best_model_dict)
 
-            # 增量会话前创建预训练模型
             if session > 0:
-                # 创建教师模型作为单独实例
                 self.pre_model = MYNET(self.args, mode=self.args.base_mode, trans=self.num_trans)
 
-                # 针对best_model_dict处理"module."前缀问题
                 if list(self.best_model_dict.keys())[0].startswith('module.'):
-                    # 创建新的状态字典，去除"module."前缀
                     new_state_dict = {}
                     for k, v in self.best_model_dict.items():
-                        name = k[7:] if k.startswith('module.') else k  # 去除'module.'前缀
+                        name = k[7:] if k.startswith('module.') else k
                         new_state_dict[name] = v
                     pre_model_state_dict = new_state_dict
                 else:
                     pre_model_state_dict = self.best_model_dict
 
-                # 加载处理后的状态字典
                 self.pre_model.load_state_dict(pre_model_state_dict, strict=True)
                 self.pre_model = self.pre_model.cuda()
-                # 设置模式为评估模式
                 self.pre_model.eval()
 
             if session == 0:  # load base class train img label
@@ -126,7 +117,7 @@ class FSCILTrainer(Trainer):
                     if (tsa * 100) >= self.trlog['max_acc'][session]:
                         self.trlog['max_acc'][session] = float('%.3f' % (tsa * 100))
                         self.trlog['max_acc_epoch'] = epoch
-                        # 保存模型前确保目录存在
+
                         save_model_dir = os.path.join(args.save_path, 'session' + str(session) + '_max_acc.pth')
                         os.makedirs(os.path.dirname(save_model_dir), exist_ok=True)
                         torch.save(dict(params=self.model.state_dict()), save_model_dir)
@@ -211,7 +202,6 @@ class FSCILTrainer(Trainer):
 
     def set_save_path(self):
         mode = self.args.base_mode + '-' + self.args.new_mode
-        # 移除可能存在的引号
         mode = mode.replace("'", "")
         if not self.args.not_data_init:
             mode = mode + '-' + 'data_init'
@@ -245,10 +235,8 @@ class FSCILTrainer(Trainer):
             self.args.save_path = os.path.join('debug', self.args.save_path)
 
         self.args.save_path = os.path.join('checkpoint', self.args.save_path)
-        # 使用os.makedirs创建目录，exist_ok=True 确保目录存在时不会报错
         os.makedirs(self.args.save_path, exist_ok=True)
 
-        # 添加反事实训练相关的路径信息，先检查属性是否存在
         if hasattr(self.args, 'use_counterfactual') and self.args.use_counterfactual:
             self.args.save_path = self.args.save_path + '-CF_w%.2f_a%.2f' % (
                 self.args.counterfactual_weight, self.args.counterfactual_alpha)
