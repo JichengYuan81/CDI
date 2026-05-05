@@ -1,2 +1,2 @@
 # Counterfactual Distribution Intervention for FSCIL
-Code will be released upon acceptance
+The full source code for CDI will be released once it has been accepted.
