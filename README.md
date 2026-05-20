@@ -10,3 +10,23 @@ Few-Shot Class-Incremental Learning (FSCIL) focuses on enabling models to learn 
 </p>
 
 
+## Environment
+The system I used and tested in
+
+- Ubuntu 20.04.5 LTS
+- NVIDIA GeForce RTX 3090
+- Pytorch 1.12.1
+
+## Requirements
+
+To install requirements:
+
+```
+pip install -r requirements.txt
+```
+
+## Datasets
+For miniImagenet and CUB200, Please refer to [CEC](https://github.com/icoz69/CEC-CVPR2021)  to prepare the dataset.
+For CIFAR100, the dataset will be download automatically.
+
+## Training scripts
