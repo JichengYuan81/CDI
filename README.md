@@ -9,6 +9,10 @@ Few-Shot Class-Incremental Learning (FSCIL) focuses on enabling models to learn 
   <img width=900 src=".github/pipeline.png">
 </p>
 
+## Results
+<p align="center">
+  <img width=900 src=".github/results.png">
+</p>
 
 ## Environment
 The system I used and tested in
