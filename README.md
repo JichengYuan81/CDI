@@ -44,3 +44,7 @@ python train.py  -project cdi  -dataset cub200 -base_mode 'ft_cos' -new_mode 'pr
 python train.py  -project cdi -dataset cifar100 -base_mode 'ft_cos' -new_mode 'avg_cos' -lr_base 0.1 -lr_new 0.001 -decay 0.0005 -epochs_base 120 -schedule Cosine -gpu 5,6 -temperature 16 -moco_dim 32 -moco_k 8192 -mlp -moco_t 0.07 -moco_m 0.995 -size_crops 32 18 -min_scale_crops 0.9 0.2 -max_scale_crops 1.0 0.7 -num_crops 2 4 -alpha 0.2 -beta 0.8  constrained_cropping -fantasy rotation2 -use_counterfactual -counterfactual_weight 0.2 -counterfactual_alpha 0.8 -causal_weight 0.3 -counterfactual_mode domain_shift -incft
 ```
 
+- mini-Imagenet
+```
+python train.py  -project cdi -dataset mini_imagenet -base_mode 'ft_cos' -new_mode 'avg_cos' -gamma 0.1 -lr_base 0.1 -lr_new 0.1 -decay 0.0005 -epochs_base 120 -schedule Milestone -milestones 40 70 100 -gpu 5 -temperature 16 -moco_dim 128 -moco_k 8192 -mlp -moco_t 0.07 -moco_m 0.999 -size_crops 84 50 -min_scale_crops 0.2 0.05 -max_scale_crops 1.0 0.14 -num_crops 2 4 -constrained_cropping -alpha 0.2 -beta 0.8 -fantasy rot_color_perm12 -use_counterfactual -counterfactual_weight 0.2 -counterfactual_alpha 0.8 -causal_weight 0.3
+```
