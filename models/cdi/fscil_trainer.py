@@ -1,14 +1,17 @@
 from .base import Trainer
 import os.path as osp
+import os
 import torch.nn as nn
 from copy import deepcopy
+import time
+import numpy as np
+import torch
 
 from .helper import *
 from utils import *
 from dataloader.data_utils import *
 from losses import SupContrastive
 from augmentations import fantasy
-
 
 class FSCILTrainer(Trainer):
     def __init__(self, args):
@@ -23,12 +26,12 @@ class FSCILTrainer(Trainer):
             self.transform = None
             self.num_trans = 0
 
-        # 根据数据集动态设置因果模块维度
+        # Dynamically set causal module dimensions based on dataset
         if args.dataset == 'cifar100':
             args.causal_z_dim = 32
             args.causal_class_dim = 16
             args.causal_style_dim = 16
-        else:  # mini_imagenet或cub200
+        else:  # mini_imagenet or cub200
             args.causal_z_dim = 128
             args.causal_class_dim = 64
             args.causal_style_dim = 64
@@ -41,13 +44,12 @@ class FSCILTrainer(Trainer):
             print('Loading init parameters from: %s' % self.args.model_dir)
             self.best_model_dict = torch.load(self.args.model_dir)['params']
         else:
-            print('random init params')
+            print('Random init params')
             if args.start_session > 0:
-                print('WARING: Random init weights for new sessions!')
+                print('WARNING: Random init weights for new sessions!')
             self.best_model_dict = deepcopy(self.model.state_dict())
 
     def get_optimizer_base(self):
-
         optimizer = torch.optim.SGD(self.model.parameters(), self.args.lr_base, momentum=0.9, nesterov=True,
                                     weight_decay=self.args.decay)
         if self.args.schedule == 'Step':
@@ -71,42 +73,41 @@ class FSCILTrainer(Trainer):
         args = self.args
         t_start_time = time.time()
 
-        # 在训练开始时就创建保存目录
+        # Create save directory at the beginning of training
         os.makedirs(self.args.save_path, exist_ok=True)
 
-        # init train statistics
+        # Init train statistics
         result_list = [args]
 
         for session in range(args.start_session, args.sessions):
             train_set, trainloader, testloader = self.get_dataloader(session)
             self.model.load_state_dict(self.best_model_dict)
 
-            # 增量会话前创建预训练模型
+            # Create pre-trained model before incremental sessions
             if session > 0:
-                # 创建教师模型作为单独实例
+                # Create teacher model as a separate instance
                 self.pre_model = MYNET(self.args, mode=self.args.base_mode, trans=self.num_trans)
 
-                # 针对best_model_dict处理"module."前缀问题
+                # Handle 'module.' prefix issue for best_model_dict
                 if list(self.best_model_dict.keys())[0].startswith('module.'):
-                    # 创建新的状态字典，去除"module."前缀
+                    # Create new state dict, remove 'module.' prefix
                     new_state_dict = {}
                     for k, v in self.best_model_dict.items():
-                        name = k[7:] if k.startswith('module.') else k  # 去除'module.'前缀
+                        name = k[7:] if k.startswith('module.') else k  
                         new_state_dict[name] = v
                     pre_model_state_dict = new_state_dict
                 else:
                     pre_model_state_dict = self.best_model_dict
 
-                # 加载处理后的状态字典
+                # Load processed state dict
                 self.pre_model.load_state_dict(pre_model_state_dict, strict=True)
                 self.pre_model = self.pre_model.cuda()
-                # 设置模式为评估模式
+                # Set mode to evaluation
                 self.pre_model.eval()
 
             if session == 0:  # load base class train img label
-
                 train_set.multi_train = True
-                print('new classes for this session:\n', np.unique(train_set.targets))
+                print('New classes for this session:\n', np.unique(train_set.targets))
                 optimizer, scheduler = self.get_optimizer_base()
                 criterion = SupContrastive()
                 criterion = criterion.cuda()
@@ -119,6 +120,7 @@ class FSCILTrainer(Trainer):
                         criterion, optimizer,
                         scheduler, epoch,
                         self.transform, args)
+                    
                     # test model with all seen class
                     tsl, tsa = test(self.model, testloader, epoch, self.transform, args, session)
 
@@ -126,15 +128,16 @@ class FSCILTrainer(Trainer):
                     if (tsa * 100) >= self.trlog['max_acc'][session]:
                         self.trlog['max_acc'][session] = float('%.3f' % (tsa * 100))
                         self.trlog['max_acc_epoch'] = epoch
-                        # 保存模型前确保目录存在
+                        
+                        # Ensure directory exists before saving model
                         save_model_dir = os.path.join(args.save_path, 'session' + str(session) + '_max_acc.pth')
                         os.makedirs(os.path.dirname(save_model_dir), exist_ok=True)
                         torch.save(dict(params=self.model.state_dict()), save_model_dir)
                         torch.save(optimizer.state_dict(), os.path.join(args.save_path, 'optimizer_best.pth'))
                         self.best_model_dict = deepcopy(self.model.state_dict())
-                        print('********A better model is found!!**********')
+                        print('******** A better model is found!! **********')
                         print('Saving model to :%s' % save_model_dir)
-                    print('best epoch {}, best test acc={:.3f}'.format(self.trlog['max_acc_epoch'],
+                    print('Best epoch {}, Best test acc={:.3f}'.format(self.trlog['max_acc_epoch'],
                                                                        self.trlog['max_acc'][session]))
 
                     self.trlog['train_loss'].append(tl)
@@ -148,11 +151,11 @@ class FSCILTrainer(Trainer):
                             epoch, lrc, tl, tl_joint, tl_moco, tl_moco_global, tl_moco_small,
                             tl_causal, tl_recon, tl_inv, ta, tsl, tsa))
                     print('This epoch takes %d seconds' % (time.time() - start_time),
-                          '\nstill need around %.2f mins to finish this session' % (
+                          '\nStill need around %.2f mins to finish this session' % (
                                   (time.time() - start_time) * (args.epochs_base - epoch) / 60))
                     scheduler.step()
 
-                result_list.append('Session {}, Test Best Epoch {},\nbest test Acc {:.4f}\n'.format(
+                result_list.append('Session {}, Test Best Epoch {},\nBest test Acc {:.4f}\n'.format(
                     session, self.trlog['max_acc_epoch'], self.trlog['max_acc'][session], ))
 
                 if not args.not_data_init:
@@ -169,18 +172,19 @@ class FSCILTrainer(Trainer):
                     tsl, tsa = test(self.model, testloader, 0, self.transform, args, session)
                     if (tsa * 100) >= self.trlog['max_acc'][session]:
                         self.trlog['max_acc'][session] = float('%.3f' % (tsa * 100))
-                        print('The new best test acc of base session={:.3f}'.format(self.trlog['max_acc'][session]))
-
+                    print('The new best test acc of base session={:.3f}'.format(self.trlog['max_acc'][session]))
 
             else:  # incremental learning sessions
-                print("training session: [%d]" % session)
-
+                print("Training session: [%d]" % session)
                 self.model.module.mode = self.args.new_mode
-
                 self.model.eval()
                 train_transform = trainloader.dataset.transform
                 trainloader.dataset.transform = testloader.dataset.transform
                 self.model.module.update_fc(trainloader, np.unique(train_set.targets), self.transform, session)
+                if args.incft:
+                    trainloader.dataset.transform = train_transform
+                    train_set.multi_train = True
+                    update_fc_ft(trainloader, self.transform, self.model, self.num_trans, session, args)
 
                 tsl, tsa = test(self.model, testloader, 0, self.transform, args, session)
 
@@ -191,7 +195,7 @@ class FSCILTrainer(Trainer):
                 torch.save(dict(params=self.model.state_dict()), save_model_dir)
                 self.best_model_dict = deepcopy(self.model.state_dict())
                 print('Saving model to :%s' % save_model_dir)
-                print('  test acc={:.3f}'.format(self.trlog['max_acc'][session]))
+                print('Test acc={:.3f}'.format(self.trlog['max_acc'][session]))
 
                 result_list.append('Session {}, test Acc {:.3f}\n'.format(session, self.trlog['max_acc'][session]))
 
@@ -207,7 +211,7 @@ class FSCILTrainer(Trainer):
 
     def set_save_path(self):
         mode = self.args.base_mode + '-' + self.args.new_mode
-        # 移除可能存在的引号
+        # Remove possible quotes
         mode = mode.replace("'", "")
         if not self.args.not_data_init:
             mode = mode + '-' + 'data_init'
@@ -215,6 +219,7 @@ class FSCILTrainer(Trainer):
         self.args.save_path = '%s/' % self.args.dataset
         self.args.save_path = self.args.save_path + '%s/' % self.args.project
         self.args.save_path = self.args.save_path + '%s-start_%d/' % (mode, self.args.start_session)
+        
         if self.args.schedule == 'Milestone':
             mile_stone = str(self.args.milestones).replace(" ", "").replace(',', '_')[1:-1]
             self.args.save_path = self.args.save_path + 'Epo_%d-Lr_%.4f-MS_%s-Gam_%.2f-Bs_%d-Mom_%.2f' % (
@@ -237,14 +242,16 @@ class FSCILTrainer(Trainer):
         self.args.save_path = self.args.save_path + f'-fantasy_{self.args.fantasy}'
         self.args.save_path = self.args.save_path + '-alpha_%.2f-beta_%.2f-causal_%.2f' % (
             self.args.alpha, self.args.beta, self.args.causal_weight)
+        
         if self.args.debug:
             self.args.save_path = os.path.join('debug', self.args.save_path)
 
         self.args.save_path = os.path.join('checkpoint', self.args.save_path)
-        # 使用os.makedirs创建目录，exist_ok=True 确保目录存在时不会报错
+        
+        # Use os.makedirs to create directory, exist_ok=True prevents errors if directory exists
         os.makedirs(self.args.save_path, exist_ok=True)
 
-        # 添加反事实训练相关的路径信息，先检查属性是否存在
+        # Add path info related to counterfactual training, check if attribute exists first
         if hasattr(self.args, 'use_counterfactual') and self.args.use_counterfactual:
             self.args.save_path = self.args.save_path + '-CF_w%.2f_a%.2f' % (
                 self.args.counterfactual_weight, self.args.counterfactual_alpha)
