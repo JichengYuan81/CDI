@@ -1,5 +1,5 @@
 import argparse
-
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,7 +7,7 @@ import numpy as np
 from models.resnet18_encoder import *
 from models.resnet20_cifar import *
 from .attention import SelfAttention
-from .causal import CausalSCM  # 新增导入
+from .causal import CausalSCM  
 
 
 class MYNET(nn.Module):
@@ -17,6 +17,7 @@ class MYNET(nn.Module):
 
         self.mode = mode
         self.args = args
+        
         if self.args.dataset in ['cifar100']:
             self.encoder_q = resnet20(num_classes=self.args.moco_dim)
             self.encoder_k = resnet20(num_classes=self.args.moco_dim)
@@ -28,8 +29,9 @@ class MYNET(nn.Module):
         if self.args.dataset == 'cub200':
             self.encoder_q = resnet18(True, args, num_classes=self.args.moco_dim)
             self.encoder_k = resnet18(True, args,
-                                      num_classes=self.args.moco_dim)  # pretrained=True follow TOPIC, models for cub is imagenet pre-trained. https://github.com/xyutao/fscil/issues/11#issuecomment-687548790
+                                      num_classes=self.args.moco_dim)  # pretrained=True follow TOPIC, models for cub is imagenet pre-trained.
             self.num_features = 512
+            
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(self.num_features, self.args.num_classes * trans, bias=False)
 
@@ -57,17 +59,17 @@ class MYNET(nn.Module):
         # Add SelfAttention module
         self.attention = SelfAttention(self.num_features)
 
-        # 添加因果SCM模块
+        # Add Causal SCM module
         self.causal_module = CausalSCM(feature_dim=self.num_features,
                                        z_dim=args.causal_z_dim if hasattr(args, 'causal_z_dim') else 128,
                                        class_dim=args.causal_class_dim if hasattr(args, 'causal_class_dim') else 64,
                                        style_dim=args.causal_style_dim if hasattr(args, 'causal_style_dim') else 64)
 
-        # 添加用于因果特征的分类器
+        # Add classifier for causal features
         self.causal_classifier = nn.Linear(args.causal_class_dim if hasattr(args, 'causal_class_dim') else 64,
                                            self.args.num_classes * trans, bias=False)
 
-        # 因果损失函数的权重
+        # Weight for causal loss
         self.causal_weight = args.causal_weight if hasattr(args, 'causal_weight') else 0.5
 
     @torch.no_grad()
@@ -107,20 +109,19 @@ class MYNET(nn.Module):
             x, _, causal_outputs = self.encode_q(x)
             class_features = causal_outputs['class_features']
 
-            # 根据模式选择正确的分类方式
+            # Select correct classification based on mode
             if 'cos' in self.mode:
-                # 对原始特征的分类
+                # Classification on original features
                 orig_logits = F.linear(F.normalize(x, p=2, dim=-1),
                                        F.normalize(self.fc.weight, p=2, dim=-1))
                 orig_logits = self.args.temperature * orig_logits
 
-                # 对因果类别特征的分类
+                # Classification on causal category features
                 causal_logits = F.linear(F.normalize(class_features, p=2, dim=-1),
                                          F.normalize(self.causal_classifier.weight, p=2, dim=-1))
                 causal_logits = self.args.temperature * causal_logits
 
-                # 组合两种logits
-                # x = orig_logits + causal_logits
+                # Combine both logits
                 x = orig_logits + self.causal_weight * causal_logits
 
             elif 'dot' in self.mode:
@@ -128,7 +129,7 @@ class MYNET(nn.Module):
                 causal_logits = self.causal_classifier(class_features)
                 x = orig_logits + self.causal_weight * causal_logits
 
-            # 返回组合后的logits以及因果模块输出（用于计算损失）
+            # Return combined logits and causal module outputs (for loss calculation)
             return x, causal_outputs
 
         else:
@@ -146,20 +147,20 @@ class MYNET(nn.Module):
         x = F.adaptive_avg_pool2d(x, 1)
         x = x.squeeze(-1).squeeze(-1)
 
-        # 应用自注意力
+        # Apply self-attention
         x = self.attention(x)
 
-        # 应用因果模块进行干预
+        # Apply causal module for intervention
         causal_outputs = self.causal_module(x, training=self.training)
 
-        # 在训练时返回因果模块的输出，测试时直接返回类别特征
+        # Return causal module output during training, otherwise return category features
         if self.training:
             return x, y, causal_outputs
         else:
-            # 在测试时使用投影后的类别特征增强原始特征
+            # Enhance original features with projected category features during testing
             class_features_projected = causal_outputs['class_features_projected']
-            # 通过残差连接方式融合原始特征和投影后的类别特征
-            # x = x + class_features_projected
+            
+            # Fuse original features and projected category features via residual connection
             x = x + self.causal_weight * class_features_projected
             return x, y
 
@@ -167,13 +168,13 @@ class MYNET(nn.Module):
         x, y = self.encoder_k(x)
         x = F.adaptive_avg_pool2d(x, 1)
         x = x.squeeze(-1).squeeze(-1)
+        
         x = self.attention(x)
 
-        # 在测试时对key也应用因果处理以保持一致性
+        # Apply causal processing to key during testing to maintain consistency
         if not self.training:
             causal_outputs = self.causal_module(x, training=False)
             class_features_projected = causal_outputs['class_features_projected']
-            # x = x + class_features_projected
             x = x + self.causal_weight * class_features_projected
 
         return x, y
@@ -191,15 +192,15 @@ class MYNET(nn.Module):
             else:
                 b = im_q.shape[0]
 
-                # 获取分类logits和因果输出
+                # Get classification logits and causal outputs
                 if self.training:
                     logits_classify, causal_outputs = self.forward_metric(im_cla)
                 else:
                     logits_classify = self.forward_metric(im_cla)
 
-                # 处理查询图像
+                # Process query images
                 if self.training:
-                    _, q, _ = self.encode_q(im_q)  # 忽略因果输出，仅使用MoCo特征
+                    _, q, _ = self.encode_q(im_q)  # Ignore causal output, only use MoCo features
                 else:
                     _, q = self.encode_q(im_q)
 
@@ -209,7 +210,7 @@ class MYNET(nn.Module):
 
                 if im_q_small is not None:
                     if self.training:
-                        _, q_small, _ = self.encode_q(im_q_small)  # 修改这里，正确解包3个返回值
+                        _, q_small, _ = self.encode_q(im_q_small)  # Unpack 3 return values
                     else:
                         _, q_small = self.encode_q(im_q_small)
 
@@ -254,16 +255,16 @@ class MYNET(nn.Module):
                 if base_sess or (not base_sess and last_epochs_new):
                     self._dequeue_and_enqueue(k, labels)
 
-                # 返回值根据训练/测试状态调整
+                # Adjust return values based on train/test status
                 if self.training:
                     return logits_classify, logits_global, logits_small, targets_global, targets_small, causal_outputs
                 else:
                     return logits_classify, logits_global, logits_small, targets_global, targets_small
 
         elif self.mode == 'encoder':
-            # 编码器模式
+            # Encoder mode
             if self.training:
-                x, _, _ = self.encode_q(im_cla)  # 忽略因果输出
+                x, _, _ = self.encode_q(im_cla)  # Ignore causal output
             else:
                 x, _ = self.encode_q(im_cla)
             return x
