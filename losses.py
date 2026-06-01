@@ -2,7 +2,7 @@
 # Modified from UniMoCo (https://github.com/dddzg/unimoco)
 # Copyright (c) Tencent, Inc. and its affiliates. All Rights Reserved.
 # ------------------------------------------------------------------------
-"""Definition of the Supervised Contrastive Loss
+"""Definition of the Supervised Contrastive Loss and Causal Losses
 """
 from torch import nn
 import torch
@@ -28,7 +28,10 @@ class SupContrastive(nn.Module):
 
 
 class CausalConsistencyLoss(nn.Module):
-    """因果一致性损失：确保模型对原始样本和反事实样本的预测一致"""
+    """
+    Causal Consistency Loss: Ensures the model's predictions are consistent 
+    between original and counterfactual samples.
+    """
 
     def __init__(self, temperature=1.0):
         super().__init__()
@@ -36,16 +39,17 @@ class CausalConsistencyLoss(nn.Module):
 
     def forward(self, logits_original, logits_cf):
         """
-        计算原始预测和反事实预测之间的一致性损失
+        Calculates the consistency loss between original and counterfactual predictions.
 
-        logits_original: 原始样本的预测 [B, C]
-        logits_cf: 反事实样本的预测 [B, C]
+        Args:
+            logits_original: Predictions for original samples [B, C]
+            logits_cf: Predictions for counterfactual samples [B, C]
         """
-        # 使用KL散度衡量预测分布的差异
+        # Use KL divergence to measure the difference in predictive distributions
         p_original = F.softmax(logits_original / self.temperature, dim=1)
         p_cf = F.softmax(logits_cf / self.temperature, dim=1)
 
-        # 计算KL散度
+        # Calculate KL divergence
         loss_kl = F.kl_div(
             torch.log(p_cf + 1e-10),
             p_original,
@@ -56,34 +60,36 @@ class CausalConsistencyLoss(nn.Module):
 
 
 class CausalInvarianceLoss(nn.Module):
-    """因果不变性损失：确保对反事实样本的预测与原始样本一致"""
+    """
+    Causal Invariance Loss: Ensures predictions on counterfactual samples 
+    remain invariant to the original samples.
+    """
 
     def __init__(self, mode='js', temperature=1.0):
         super().__init__()
-        self.mode = mode  # 'kl'或'js'
+        self.mode = mode  # 'kl' or 'js'
         self.temperature = temperature
 
     def forward(self, logits_orig, logits_cf):
         """
-        计算原始预测和反事实预测之间的因果不变性损失
+        Calculates the causal invariance loss between original and counterfactual predictions.
 
         Args:
-            logits_orig: 原始样本的预测 [B, C]
-            logits_cf: 反事实样本的预测 [B, C]
+            logits_orig: Predictions for original samples [B, C]
+            logits_cf: Predictions for counterfactual samples [B, C]
         """
         p_orig = F.softmax(logits_orig / self.temperature, dim=1)
         p_cf = F.softmax(logits_cf / self.temperature, dim=1)
 
         if self.mode == 'kl':
-            # KL散度: KL(p_cf||p_orig)
+            # KL Divergence: KL(p_cf||p_orig)
             loss = F.kl_div(torch.log(p_cf + 1e-10), p_orig, reduction='batchmean')
 
         elif self.mode == 'js':
-            # JS散度: 0.5*KL(p_orig||p_mix) + 0.5*KL(p_cf||p_mix)
+            # JS Divergence: 0.5*KL(p_orig||p_mix) + 0.5*KL(p_cf||p_mix)
             p_mix = 0.5 * (p_orig + p_cf)
             loss_1 = F.kl_div(torch.log(p_mix + 1e-10), p_orig, reduction='batchmean')
             loss_2 = F.kl_div(torch.log(p_mix + 1e-10), p_cf, reduction='batchmean')
             loss = 0.5 * (loss_1 + loss_2)
 
         return loss
-
