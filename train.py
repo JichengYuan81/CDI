@@ -7,7 +7,7 @@ import torch
 
 MODEL_DIR = None
 DATA_DIR = 'data/'
-PROJECT = 'cdi'  # Replaced 'savc' with 'cdi'
+PROJECT = 'cdi' 
 
 
 def get_command_line_parser():
