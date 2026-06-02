@@ -114,9 +114,9 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
         # Display progress
         lrc = scheduler.get_last_lr()[0]
         tqdm_gen.set_description(
-            'Session 0, epo {}, lrc={:.4f},total={:.4f},joint={:.4f},moco={:.4f},'
+            'Session 0, epo {},total={:.4f},joint={:.4f},'
             'causal={:.4f},inv={:.4f},acc={:.4f}'.format(
-                epoch, lrc, loss.item(), joint_loss.item(), loss_moco.item(),
+                epoch, loss.item(), joint_loss.item(),
                 causal_loss.item(), inv_loss.item(), acc))
 
         # Backward pass
@@ -325,7 +325,7 @@ def update_fc_ft(trainloader, data_transform, model, m, session, args):
                 loss_moco = args.alpha * loss_moco_global + args.beta * loss_moco_small
                 
                 # Total loss: add causal invariance loss
-                loss = joint_loss + loss_moco + 0.1 * causal_inv_loss  
+                loss = joint_loss + 0.1 * causal_inv_loss  
 
                 optimizer.zero_grad()
                 loss.backward()
