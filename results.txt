@@ -1,0 +1,147 @@
+Namespace(Dataset=<module 'dataloader.cub200.cub200' from '/home/yuanjicheng/CDI/dataloader/cub200/cub200.py'>, alpha=0.5, auto_augment=[], base_class=100, base_mode='ft_cos', batch_size_base=32, batch_size_new=0, beta=0.5, causal_class_dim=64, causal_style_dim=64, causal_weight=0.3, causal_z_dim=128, constrained_cropping=True, counterfactual_alpha=0.8, counterfactual_mode='domain_shift', counterfactual_weight=0.2, dataroot='data/', dataset='cub200', debug=False, decay=0.0005, distill_temp=0.5, epochs_base=120, epochs_new=10, fantasy='rotation2', gamma=0.1, gpu='0,2', incft=True, lr_base=0.002, lr_new=0.03, lrb=0.1, lrw=0.1, max_scale_crops=[1.0, 0.14], milestones=[60, 80, 100], min_scale_crops=[0.2, 0.05], mlp=True, moco_dim=128, moco_k=8192, moco_m=0.999, moco_t=0.07, model_dir=None, momentum=0.9, new_mode='protonet_cos', not_data_init=False, num_classes=200, num_crops=[2, 4], num_gpu=2, num_workers=4, project='cdi', recon_weight=0.1, save_path='checkpoint/cub200/cdi/ft_cos-protonet_cos-data_init-start_0/Epo_120-Lr_0.0020-MS_60_80_100-Gam_0.10-Bs_32-Mom_0.90-T_16.00-fantasy_rotation2-alpha_0.50-beta_0.50-causal_0.30-CF_w0.20_a0.80', schedule='Milestone', seed=1, sessions=11, set_no_val=False, shot=5, size_crops=[224, 96], start_session=0, step=40, temperature=16, test_batch_size=100, use_counterfactual=True, way=10)
+epoch:000,lr:0.0020,train_loss:5.17245,joint_loss:4.95911,causal:0.43209,recon:0.42654,inv:0.41859,train_acc:0.04638,test_loss:3.41652,test_acc:0.28237
+epoch:001,lr:0.0020,train_loss:3.39540,joint_loss:3.28001,causal:0.32654,recon:0.31964,inv:0.08715,train_acc:0.29322,test_loss:2.39285,test_acc:0.53560
+epoch:002,lr:0.0020,train_loss:2.60767,joint_loss:2.49167,causal:0.31706,recon:0.31002,inv:0.10442,train_acc:0.45783,test_loss:1.92980,test_acc:0.63485
+epoch:003,lr:0.0020,train_loss:2.21737,joint_loss:2.10556,causal:0.30146,recon:0.29446,inv:0.10685,train_acc:0.53845,test_loss:1.69169,test_acc:0.69554
+epoch:004,lr:0.0020,train_loss:1.88763,joint_loss:1.78188,causal:0.28231,recon:0.27542,inv:0.10528,train_acc:0.60699,test_loss:1.54318,test_acc:0.72263
+epoch:005,lr:0.0020,train_loss:1.75036,joint_loss:1.64949,causal:0.26910,recon:0.26239,inv:0.10070,train_acc:0.63026,test_loss:1.41990,test_acc:0.72998
+epoch:006,lr:0.0020,train_loss:1.54752,joint_loss:1.45126,causal:0.25689,recon:0.25032,inv:0.09599,train_acc:0.68124,test_loss:1.33368,test_acc:0.74834
+epoch:007,lr:0.0020,train_loss:1.48406,joint_loss:1.39174,causal:0.24747,recon:0.24123,inv:0.09039,train_acc:0.69033,test_loss:1.25749,test_acc:0.76534
+epoch:008,lr:0.0020,train_loss:1.43854,joint_loss:1.34981,causal:0.23835,recon:0.23222,inv:0.08611,train_acc:0.70756,test_loss:1.24202,test_acc:0.76228
+epoch:009,lr:0.0020,train_loss:1.35039,joint_loss:1.26431,causal:0.22967,recon:0.22351,inv:0.08589,train_acc:0.72141,test_loss:1.20189,test_acc:0.76603
+epoch:010,lr:0.0020,train_loss:1.27669,joint_loss:1.19369,causal:0.22361,recon:0.21768,inv:0.07962,train_acc:0.74695,test_loss:1.14927,test_acc:0.77608
+epoch:011,lr:0.0020,train_loss:1.25526,joint_loss:1.17357,causal:0.21859,recon:0.21298,inv:0.08059,train_acc:0.74047,test_loss:1.13227,test_acc:0.79144
+epoch:012,lr:0.0020,train_loss:1.19750,joint_loss:1.11916,causal:0.21213,recon:0.20650,inv:0.07351,train_acc:0.75659,test_loss:1.11840,test_acc:0.77937
+epoch:013,lr:0.0020,train_loss:1.13065,joint_loss:1.05372,causal:0.20714,recon:0.20173,inv:0.07397,train_acc:0.77072,test_loss:1.07244,test_acc:0.79228
+epoch:014,lr:0.0020,train_loss:1.08269,joint_loss:1.00780,causal:0.20342,recon:0.19812,inv:0.06936,train_acc:0.77909,test_loss:1.07065,test_acc:0.79228
+epoch:015,lr:0.0020,train_loss:1.02992,joint_loss:0.95623,causal:0.19843,recon:0.19312,inv:0.07081,train_acc:0.79521,test_loss:1.06130,test_acc:0.78588
+epoch:016,lr:0.0020,train_loss:1.00317,joint_loss:0.93165,causal:0.19472,recon:0.18951,inv:0.06552,train_acc:0.79998,test_loss:1.06210,test_acc:0.79489
+epoch:017,lr:0.0020,train_loss:0.99926,joint_loss:0.93004,causal:0.18857,recon:0.18355,inv:0.06324,train_acc:0.80297,test_loss:1.04998,test_acc:0.78539
+epoch:018,lr:0.0020,train_loss:0.92816,joint_loss:0.85967,causal:0.18586,recon:0.18097,inv:0.06363,train_acc:0.81411,test_loss:1.04864,test_acc:0.78780
+epoch:019,lr:0.0020,train_loss:0.95349,joint_loss:0.88576,causal:0.18292,recon:0.17811,inv:0.06428,train_acc:0.80851,test_loss:1.04757,test_acc:0.79903
+epoch:020,lr:0.0020,train_loss:0.94621,joint_loss:0.88140,causal:0.17751,recon:0.17280,inv:0.05780,train_acc:0.81588,test_loss:1.01767,test_acc:0.79263
+epoch:021,lr:0.0020,train_loss:0.89376,joint_loss:0.82929,causal:0.17577,recon:0.17108,inv:0.05867,train_acc:0.82314,test_loss:1.02252,test_acc:0.79937
+epoch:022,lr:0.0020,train_loss:0.87058,joint_loss:0.80675,causal:0.17310,recon:0.16853,inv:0.05951,train_acc:0.82901,test_loss:0.98711,test_acc:0.80056
+epoch:023,lr:0.0020,train_loss:0.86829,joint_loss:0.80493,causal:0.17234,recon:0.16787,inv:0.05829,train_acc:0.83101,test_loss:0.99043,test_acc:0.80110
+epoch:024,lr:0.0020,train_loss:0.83366,joint_loss:0.77215,causal:0.16810,recon:0.16366,inv:0.05542,train_acc:0.83843,test_loss:0.98798,test_acc:0.79627
+epoch:025,lr:0.0020,train_loss:0.81328,joint_loss:0.75257,causal:0.16576,recon:0.16140,inv:0.05492,train_acc:0.84054,test_loss:0.98643,test_acc:0.79539
+epoch:026,lr:0.0020,train_loss:0.81822,joint_loss:0.75809,causal:0.16311,recon:0.15883,inv:0.05600,train_acc:0.84231,test_loss:0.98856,test_acc:0.79144
+epoch:027,lr:0.0020,train_loss:0.78235,joint_loss:0.72345,causal:0.16061,recon:0.15631,inv:0.05356,train_acc:0.85389,test_loss:0.98479,test_acc:0.80593
+epoch:028,lr:0.0020,train_loss:0.79097,joint_loss:0.73276,causal:0.15788,recon:0.15368,inv:0.05420,train_acc:0.84663,test_loss:0.95463,test_acc:0.80297
+epoch:029,lr:0.0020,train_loss:0.78406,joint_loss:0.72716,causal:0.15663,recon:0.15241,inv:0.04954,train_acc:0.85001,test_loss:0.97574,test_acc:0.79297
+epoch:030,lr:0.0020,train_loss:0.69924,joint_loss:0.64320,causal:0.15226,recon:0.14816,inv:0.05184,train_acc:0.86813,test_loss:0.95831,test_acc:0.79972
+epoch:031,lr:0.0020,train_loss:0.71997,joint_loss:0.66593,causal:0.14886,recon:0.14485,inv:0.04689,train_acc:0.86442,test_loss:0.97084,test_acc:0.79297
+epoch:032,lr:0.0020,train_loss:0.71957,joint_loss:0.66539,causal:0.14781,recon:0.14384,inv:0.04918,train_acc:0.86170,test_loss:0.94595,test_acc:0.80144
+epoch:033,lr:0.0020,train_loss:0.65654,joint_loss:0.60286,causal:0.14582,recon:0.14180,inv:0.04969,train_acc:0.87223,test_loss:0.96012,test_acc:0.79746
+epoch:034,lr:0.0020,train_loss:0.71023,joint_loss:0.65806,causal:0.14319,recon:0.13929,inv:0.04605,train_acc:0.85710,test_loss:0.96948,test_acc:0.80026
+epoch:035,lr:0.0020,train_loss:0.67610,joint_loss:0.62481,causal:0.14149,recon:0.13766,inv:0.04421,train_acc:0.87400,test_loss:0.98766,test_acc:0.79765
+epoch:036,lr:0.0020,train_loss:0.70762,joint_loss:0.65679,causal:0.13954,recon:0.13582,inv:0.04485,train_acc:0.86453,test_loss:0.94559,test_acc:0.80179
+epoch:037,lr:0.0020,train_loss:0.68201,joint_loss:0.63150,causal:0.13791,recon:0.13417,inv:0.04565,train_acc:0.86536,test_loss:0.97405,test_acc:0.79627
+epoch:038,lr:0.0020,train_loss:0.64310,joint_loss:0.59373,causal:0.13601,recon:0.13231,inv:0.04284,train_acc:0.87688,test_loss:0.96685,test_acc:0.79765
+epoch:039,lr:0.0020,train_loss:0.65955,joint_loss:0.61022,causal:0.13560,recon:0.13200,inv:0.04326,train_acc:0.86990,test_loss:0.96272,test_acc:0.80110
+epoch:040,lr:0.0020,train_loss:0.63214,joint_loss:0.58423,causal:0.13209,recon:0.12855,inv:0.04141,train_acc:0.87777,test_loss:0.94967,test_acc:0.80282
+epoch:041,lr:0.0020,train_loss:0.61095,joint_loss:0.56351,causal:0.12907,recon:0.12555,inv:0.04359,train_acc:0.88492,test_loss:0.96378,test_acc:0.81006
+epoch:042,lr:0.0020,train_loss:0.61168,joint_loss:0.56520,causal:0.12891,recon:0.12554,inv:0.03903,train_acc:0.87877,test_loss:0.96228,test_acc:0.80022
+epoch:043,lr:0.0020,train_loss:0.60140,joint_loss:0.55542,causal:0.12641,recon:0.12304,inv:0.04026,train_acc:0.88398,test_loss:0.95600,test_acc:0.79765
+epoch:044,lr:0.0020,train_loss:0.62027,joint_loss:0.57330,causal:0.12881,recon:0.12551,inv:0.04163,train_acc:0.87855,test_loss:0.95218,test_acc:0.80297
+epoch:045,lr:0.0020,train_loss:0.60771,joint_loss:0.56226,causal:0.12585,recon:0.12262,inv:0.03844,train_acc:0.88292,test_loss:0.94815,test_acc:0.80332
+epoch:046,lr:0.0020,train_loss:0.62136,joint_loss:0.57641,causal:0.12382,recon:0.12055,inv:0.03906,train_acc:0.87899,test_loss:0.95385,test_acc:0.80194
+epoch:047,lr:0.0020,train_loss:0.61893,joint_loss:0.57452,causal:0.12221,recon:0.11899,inv:0.03874,train_acc:0.88198,test_loss:0.94459,test_acc:0.80642
+epoch:048,lr:0.0020,train_loss:0.58789,joint_loss:0.54314,causal:0.12131,recon:0.11811,inv:0.04176,train_acc:0.88747,test_loss:0.95343,test_acc:0.79987
+epoch:049,lr:0.0020,train_loss:0.56785,joint_loss:0.52414,causal:0.12067,recon:0.11756,inv:0.03757,train_acc:0.89074,test_loss:0.94947,test_acc:0.80228
+epoch:050,lr:0.0020,train_loss:0.56892,joint_loss:0.52618,causal:0.11817,recon:0.11513,inv:0.03644,train_acc:0.88785,test_loss:0.94874,test_acc:0.79849
+epoch:051,lr:0.0020,train_loss:0.53947,joint_loss:0.49718,causal:0.11618,recon:0.11322,inv:0.03719,train_acc:0.89860,test_loss:0.93098,test_acc:0.80834
+epoch:052,lr:0.0020,train_loss:0.56507,joint_loss:0.52331,causal:0.11565,recon:0.11272,inv:0.03534,train_acc:0.88907,test_loss:0.96858,test_acc:0.80420
+epoch:053,lr:0.0020,train_loss:0.54403,joint_loss:0.50245,causal:0.11506,recon:0.11212,inv:0.03528,train_acc:0.89899,test_loss:0.95283,test_acc:0.80041
+epoch:054,lr:0.0020,train_loss:0.55555,joint_loss:0.51462,causal:0.11406,recon:0.11122,inv:0.03359,train_acc:0.89234,test_loss:0.96187,test_acc:0.79662
+epoch:055,lr:0.0020,train_loss:0.55872,joint_loss:0.51781,causal:0.11247,recon:0.10972,inv:0.03582,train_acc:0.89306,test_loss:0.93508,test_acc:0.80519
+epoch:056,lr:0.0020,train_loss:0.55176,joint_loss:0.51148,causal:0.11173,recon:0.10896,inv:0.03384,train_acc:0.89162,test_loss:0.94051,test_acc:0.80332
+epoch:057,lr:0.0020,train_loss:0.51953,joint_loss:0.47878,causal:0.11108,recon:0.10825,inv:0.03711,train_acc:0.89822,test_loss:0.95976,test_acc:0.80041
+epoch:058,lr:0.0020,train_loss:0.49780,joint_loss:0.45832,causal:0.10956,recon:0.10684,inv:0.03308,train_acc:0.90858,test_loss:0.96531,test_acc:0.80317
+epoch:059,lr:0.0020,train_loss:0.53866,joint_loss:0.49984,causal:0.10828,recon:0.10561,inv:0.03166,train_acc:0.89556,test_loss:0.93141,test_acc:0.80696
+epoch:060,lr:0.0002,train_loss:0.48796,joint_loss:0.45012,causal:0.10639,recon:0.10381,inv:0.02963,train_acc:0.90503,test_loss:0.91025,test_acc:0.81075
+epoch:061,lr:0.0002,train_loss:0.46270,joint_loss:0.42611,causal:0.10417,recon:0.10159,inv:0.02669,train_acc:0.90642,test_loss:0.91238,test_acc:0.81213
+epoch:062,lr:0.0002,train_loss:0.46196,joint_loss:0.42525,causal:0.10389,recon:0.10130,inv:0.02771,train_acc:0.91179,test_loss:0.90681,test_acc:0.81317
+epoch:063,lr:0.0002,train_loss:0.43233,joint_loss:0.39694,causal:0.10261,recon:0.10001,inv:0.02304,train_acc:0.91639,test_loss:0.90035,test_acc:0.81144
+epoch:064,lr:0.0002,train_loss:0.46058,joint_loss:0.42487,causal:0.10164,recon:0.09906,inv:0.02610,train_acc:0.90769,test_loss:0.91427,test_acc:0.80731
+epoch:065,lr:0.0002,train_loss:0.41437,joint_loss:0.37875,causal:0.10118,recon:0.09861,inv:0.02633,train_acc:0.92188,test_loss:0.90030,test_acc:0.81248
+epoch:066,lr:0.0002,train_loss:0.41815,joint_loss:0.38317,causal:0.10101,recon:0.09843,inv:0.02341,train_acc:0.91982,test_loss:0.91126,test_acc:0.81006
+epoch:067,lr:0.0002,train_loss:0.45517,joint_loss:0.42038,causal:0.10041,recon:0.09786,inv:0.02333,train_acc:0.90802,test_loss:0.89499,test_acc:0.81282
+epoch:068,lr:0.0002,train_loss:0.43100,joint_loss:0.39618,causal:0.09955,recon:0.09701,inv:0.02481,train_acc:0.92071,test_loss:0.90861,test_acc:0.81593
+epoch:069,lr:0.0002,train_loss:0.41292,joint_loss:0.37768,causal:0.09928,recon:0.09672,inv:0.02727,train_acc:0.92182,test_loss:0.91154,test_acc:0.81041
+epoch:070,lr:0.0002,train_loss:0.40853,joint_loss:0.37433,causal:0.09784,recon:0.09529,inv:0.02425,train_acc:0.92032,test_loss:0.89868,test_acc:0.81213
+epoch:071,lr:0.0002,train_loss:0.39544,joint_loss:0.36086,causal:0.09764,recon:0.09507,inv:0.02642,train_acc:0.92614,test_loss:0.90604,test_acc:0.81351
+epoch:072,lr:0.0002,train_loss:0.44122,joint_loss:0.40752,causal:0.09729,recon:0.09477,inv:0.02257,train_acc:0.90969,test_loss:0.91864,test_acc:0.80524
+epoch:073,lr:0.0002,train_loss:0.41228,joint_loss:0.37824,causal:0.09699,recon:0.09444,inv:0.02473,train_acc:0.92232,test_loss:0.90330,test_acc:0.81248
+epoch:074,lr:0.0002,train_loss:0.41407,joint_loss:0.38038,causal:0.09653,recon:0.09398,inv:0.02367,train_acc:0.91999,test_loss:0.90100,test_acc:0.81558
+epoch:075,lr:0.0002,train_loss:0.41944,joint_loss:0.38614,causal:0.09553,recon:0.09299,inv:0.02322,train_acc:0.91523,test_loss:0.91815,test_acc:0.80696
+epoch:076,lr:0.0002,train_loss:0.42746,joint_loss:0.39334,causal:0.09584,recon:0.09328,inv:0.02685,train_acc:0.91268,test_loss:0.90912,test_acc:0.81386
+epoch:077,lr:0.0002,train_loss:0.39276,joint_loss:0.35972,causal:0.09523,recon:0.09271,inv:0.02233,train_acc:0.92465,test_loss:0.90437,test_acc:0.81558
+epoch:078,lr:0.0002,train_loss:0.43740,joint_loss:0.40369,causal:0.09468,recon:0.09216,inv:0.02650,train_acc:0.91057,test_loss:0.90634,test_acc:0.81213
+epoch:079,lr:0.0002,train_loss:0.44393,joint_loss:0.41075,causal:0.09423,recon:0.09174,inv:0.02454,train_acc:0.91146,test_loss:0.90887,test_acc:0.81696
+epoch:080,lr:0.0000,train_loss:0.39379,joint_loss:0.36080,causal:0.09409,recon:0.09158,inv:0.02380,train_acc:0.92182,test_loss:0.90566,test_acc:0.81351
+epoch:081,lr:0.0000,train_loss:0.40113,joint_loss:0.36860,causal:0.09386,recon:0.09135,inv:0.02186,train_acc:0.92431,test_loss:0.89727,test_acc:0.81110
+epoch:082,lr:0.0000,train_loss:0.43366,joint_loss:0.40111,causal:0.09428,recon:0.09178,inv:0.02132,train_acc:0.91717,test_loss:0.90238,test_acc:0.81351
+epoch:083,lr:0.0000,train_loss:0.38820,joint_loss:0.35530,causal:0.09354,recon:0.09106,inv:0.02421,train_acc:0.92764,test_loss:0.89981,test_acc:0.81351
+epoch:084,lr:0.0000,train_loss:0.41047,joint_loss:0.37766,causal:0.09381,recon:0.09131,inv:0.02330,train_acc:0.92304,test_loss:0.89529,test_acc:0.81282
+epoch:085,lr:0.0000,train_loss:0.39743,joint_loss:0.36429,causal:0.09373,recon:0.09121,inv:0.02508,train_acc:0.92670,test_loss:0.91014,test_acc:0.81006
+epoch:086,lr:0.0000,train_loss:0.40787,joint_loss:0.37539,causal:0.09391,recon:0.09139,inv:0.02158,train_acc:0.92393,test_loss:0.89989,test_acc:0.81593
+epoch:087,lr:0.0000,train_loss:0.40282,joint_loss:0.36962,causal:0.09404,recon:0.09153,inv:0.02496,train_acc:0.92104,test_loss:0.91016,test_acc:0.81179
+epoch:088,lr:0.0000,train_loss:0.39176,joint_loss:0.35833,causal:0.09396,recon:0.09147,inv:0.02621,train_acc:0.92664,test_loss:0.91294,test_acc:0.81627
+epoch:089,lr:0.0000,train_loss:0.41994,joint_loss:0.38691,causal:0.09380,recon:0.09128,inv:0.02447,train_acc:0.91628,test_loss:0.90318,test_acc:0.81213
+epoch:090,lr:0.0000,train_loss:0.41923,joint_loss:0.38719,causal:0.09326,recon:0.09077,inv:0.02029,train_acc:0.91855,test_loss:0.90955,test_acc:0.81006
+epoch:091,lr:0.0000,train_loss:0.40512,joint_loss:0.37223,causal:0.09398,recon:0.09149,inv:0.02345,train_acc:0.92082,test_loss:0.89909,test_acc:0.81800
+epoch:092,lr:0.0000,train_loss:0.39968,joint_loss:0.36725,causal:0.09328,recon:0.09078,inv:0.02220,train_acc:0.92548,test_loss:0.89750,test_acc:0.81144
+epoch:093,lr:0.0000,train_loss:0.39831,joint_loss:0.36514,causal:0.09347,recon:0.09098,inv:0.02563,train_acc:0.92260,test_loss:0.90947,test_acc:0.80696
+epoch:094,lr:0.0000,train_loss:0.38398,joint_loss:0.35160,causal:0.09307,recon:0.09058,inv:0.02229,train_acc:0.92503,test_loss:0.91140,test_acc:0.81144
+epoch:095,lr:0.0000,train_loss:0.39755,joint_loss:0.36425,causal:0.09383,recon:0.09134,inv:0.02572,train_acc:0.92453,test_loss:0.89891,test_acc:0.81731
+epoch:096,lr:0.0000,train_loss:0.39891,joint_loss:0.36565,causal:0.09340,recon:0.09090,inv:0.02618,train_acc:0.92559,test_loss:0.91153,test_acc:0.81593
+epoch:097,lr:0.0000,train_loss:0.38874,joint_loss:0.35606,causal:0.09330,recon:0.09079,inv:0.02345,train_acc:0.92775,test_loss:0.90190,test_acc:0.81386
+epoch:098,lr:0.0000,train_loss:0.36885,joint_loss:0.33645,causal:0.09305,recon:0.09055,inv:0.02241,train_acc:0.93030,test_loss:0.90893,test_acc:0.81075
+epoch:099,lr:0.0000,train_loss:0.39539,joint_loss:0.36254,causal:0.09317,recon:0.09069,inv:0.02450,train_acc:0.92442,test_loss:0.90121,test_acc:0.81041
+epoch:100,lr:0.0000,train_loss:0.39017,joint_loss:0.35785,causal:0.09317,recon:0.09069,inv:0.02184,train_acc:0.92381,test_loss:0.89993,test_acc:0.81386
+epoch:101,lr:0.0000,train_loss:0.39852,joint_loss:0.36588,causal:0.09309,recon:0.09062,inv:0.02356,train_acc:0.92786,test_loss:0.90940,test_acc:0.81248
+epoch:102,lr:0.0000,train_loss:0.41342,joint_loss:0.38146,causal:0.09299,recon:0.09050,inv:0.02033,train_acc:0.91888,test_loss:0.89718,test_acc:0.81351
+epoch:103,lr:0.0000,train_loss:0.38744,joint_loss:0.35421,causal:0.09335,recon:0.09085,inv:0.02615,train_acc:0.92393,test_loss:0.91046,test_acc:0.81386
+epoch:104,lr:0.0000,train_loss:0.41803,joint_loss:0.38526,causal:0.09343,recon:0.09094,inv:0.02371,train_acc:0.92104,test_loss:0.90939,test_acc:0.80903
+epoch:105,lr:0.0000,train_loss:0.38908,joint_loss:0.35686,causal:0.09272,recon:0.09025,inv:0.02198,train_acc:0.92387,test_loss:0.90540,test_acc:0.81558
+epoch:106,lr:0.0000,train_loss:0.39391,joint_loss:0.36138,causal:0.09325,recon:0.09079,inv:0.02275,train_acc:0.92686,test_loss:0.90523,test_acc:0.81524
+epoch:107,lr:0.0000,train_loss:0.38552,joint_loss:0.35305,causal:0.09319,recon:0.09071,inv:0.02256,train_acc:0.92348,test_loss:0.89627,test_acc:0.81662
+epoch:108,lr:0.0000,train_loss:0.41494,joint_loss:0.38296,causal:0.09285,recon:0.09036,inv:0.02063,train_acc:0.91927,test_loss:0.90667,test_acc:0.81213
+epoch:109,lr:0.0000,train_loss:0.38840,joint_loss:0.35565,causal:0.09321,recon:0.09074,inv:0.02397,train_acc:0.92415,test_loss:0.90088,test_acc:0.81593
+epoch:110,lr:0.0000,train_loss:0.40257,joint_loss:0.36962,causal:0.09296,recon:0.09046,inv:0.02528,train_acc:0.92415,test_loss:0.90379,test_acc:0.81317
+epoch:111,lr:0.0000,train_loss:0.38317,joint_loss:0.35079,causal:0.09302,recon:0.09053,inv:0.02236,train_acc:0.92869,test_loss:0.89731,test_acc:0.81144
+epoch:112,lr:0.0000,train_loss:0.42719,joint_loss:0.39488,causal:0.09290,recon:0.09039,inv:0.02220,train_acc:0.91512,test_loss:0.90085,test_acc:0.81731
+epoch:113,lr:0.0000,train_loss:0.41958,joint_loss:0.38719,causal:0.09300,recon:0.09052,inv:0.02244,train_acc:0.91955,test_loss:0.89966,test_acc:0.82231
+epoch:114,lr:0.0000,train_loss:0.40357,joint_loss:0.37129,causal:0.09283,recon:0.09039,inv:0.02217,train_acc:0.92193,test_loss:0.89837,test_acc:0.81834
+epoch:115,lr:0.0000,train_loss:0.39069,joint_loss:0.35825,causal:0.09310,recon:0.09061,inv:0.02256,train_acc:0.92653,test_loss:0.89468,test_acc:0.81627
+epoch:116,lr:0.0000,train_loss:0.40904,joint_loss:0.37623,causal:0.09316,recon:0.09067,inv:0.02431,train_acc:0.92276,test_loss:0.90810,test_acc:0.81179
+epoch:117,lr:0.0000,train_loss:0.36739,joint_loss:0.33565,causal:0.09236,recon:0.08987,inv:0.02019,train_acc:0.93019,test_loss:0.90501,test_acc:0.81317
+epoch:118,lr:0.0000,train_loss:0.40126,joint_loss:0.36854,causal:0.09306,recon:0.09057,inv:0.02400,train_acc:0.92265,test_loss:0.90190,test_acc:0.81386
+epoch:119,lr:0.0000,train_loss:0.41654,joint_loss:0.38403,causal:0.09319,recon:0.09068,inv:0.02279,train_acc:0.91622,test_loss:0.90582,test_acc:0.81248
+Session 0, Test Best Epoch 113,
+best test Acc 82.2310
+
+Session 1, test Acc 78.970
+
+Session 2, test Acc 76.057
+
+Session 3, test Acc 72.327
+
+Session 4, test Acc 72.272
+
+Session 5, test Acc 69.182
+
+Session 6, test Acc 69.079
+
+Session 7, test Acc 67.713
+
+Session 8, test Acc 66.195
+
+Session 9, test Acc 65.499
+
+Session 10, test Acc 64.828
+
+Base Session Best Epoch 113
+
+[82.231, 78.97, 76.057, 72.327, 72.272, 69.182, 69.079, 67.713, 66.195, 65.499, 64.828]
