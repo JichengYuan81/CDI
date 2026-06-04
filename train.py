@@ -2,12 +2,10 @@ import argparse
 import importlib
 from utils import *
 import traceback
-import os
-import torch
 
 MODEL_DIR = None
 DATA_DIR = 'data/'
-PROJECT = 'cdi' 
+PROJECT = 'cdi'
 
 
 def get_command_line_parser():
@@ -37,12 +35,12 @@ def get_command_line_parser():
     parser.add_argument('-not_data_init', action='store_true', help='using average data embedding to init or not')
     parser.add_argument('-batch_size_base', type=int, default=32)
     parser.add_argument('-batch_size_new', type=int, default=0,
-                        help='set 0 will use all the available training image for new')
+                        help='set 0 will use all the availiable training image for new')
     parser.add_argument('-test_batch_size', type=int, default=100)
     parser.add_argument('-base_mode', type=str, default='ft_cos')  # using cosine classifier
     parser.add_argument('-new_mode', type=str, default='avg_cos')  # using average data embedding and cosine classifier
 
-    # for Contrastive Learning parameters
+    # for SAVC
     parser.add_argument('-moco_dim', default=128, type=int,
                         help='feature dimension (default: 128)')
     parser.add_argument('-moco_k', default=65536, type=int,
@@ -64,7 +62,7 @@ def get_command_line_parser():
     parser.add_argument('-constrained_cropping', action='store_true',
                         help='condition small crops on key crop')
     parser.add_argument('-auto_augment', type=int, default=[], nargs='+',
-                        help='Apply auto-augment 50% of times to the selected crops')
+                        help='Apply auto-augment 50 % of times to the selcshuected crops')
     parser.add_argument('-fantasy', type=str, default='rotation', help='fantasy method to generate virtual classes')
     parser.add_argument('-alpha', type=float, default=0.5, help='coefficient of the global contrastive loss')
     parser.add_argument('-beta', type=float, default=0.5, help='coefficient of the local contrastive loss')
@@ -78,7 +76,7 @@ def get_command_line_parser():
     parser.add_argument('-num_workers', type=int, default=8)
     parser.add_argument('-seed', type=int, default=1)
     parser.add_argument('-debug', action='store_true')
-    parser.add_argument('-incft', action='store_true', help='incremental finetuning')
+    parser.add_argument('-incft', action='store_true', help='incrmental finetuning')
 
     # Parameters for Causal Module (CDI)
     parser.add_argument('-causal_weight', type=float, default=0.1,
