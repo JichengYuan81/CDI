@@ -1,3 +1,4 @@
+# import new Network name here and add in model_class args
 from .Network import MYNET
 from utils import *
 from tqdm import tqdm
@@ -13,22 +14,20 @@ from losses import SupContrastive, CausalInvarianceLoss
 def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, transform, args):
     tl = Averager()
     tl_joint = Averager()
-    tl_moco = Averager()
-    tl_moco_global = Averager()
-    tl_moco_small = Averager()
     tl_causal = Averager()
     tl_recon = Averager()
-    tl_inv = Averager()  
+    tl_inv = Averager()
+    ta = Averager()
 
     # Create causal invariance loss function
     inv_criterion = CausalInvarianceLoss(mode='kl', temperature=args.distill_temp)
 
     model = model.train()
     tqdm_gen = tqdm(trainloader)
-    
+
     # Collect style features for storage during the last epoch
     style_features_list = []
-    
+
     for i, batch in enumerate(tqdm_gen, 1):
         data, single_labels = [_ for _ in batch]
         b, c, h, w = data[1].shape
@@ -36,7 +35,6 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
         data[1] = data[1].cuda(non_blocking=True)
         data[2] = data[2].cuda(non_blocking=True)
         single_labels = single_labels.cuda(non_blocking=True)
-        
         if len(args.num_crops) > 1:
             data_small = data[args.num_crops[0] + 1].unsqueeze(1)
             for j in range(1, args.num_crops[1]):
@@ -52,13 +50,9 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
         m = data_query.size()[0] // b
         joint_labels = torch.stack([single_labels * m + ii for ii in range(m)], 1).view(-1)
 
-        joint_preds, logits_global, logits_small, target_global, target_small, causal_outputs = model(
+        joint_preds, _, _, _, _, causal_outputs = model(
             im_cla=data_classify, im_q=data_query, im_k=data_key,
             labels=joint_labels, im_q_small=data_small)
-
-        loss_moco_global = criterion(logits_global, target_global)
-        loss_moco_small = criterion(logits_small, target_small)
-        loss_moco = args.alpha * loss_moco_global + args.beta * loss_moco_small
 
         joint_preds = joint_preds[:, :args.base_class * m]
         joint_loss = F.cross_entropy(joint_preds, joint_labels)
@@ -78,10 +72,10 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
             original_features, joint_labels, mode=args.counterfactual_mode, alpha=args.counterfactual_alpha)
 
         # Forward pass using counterfactual features
-        model.module.mode = 'encoder'  # Temporarily switch to encoder mode
+        model.module.mode = 'encoder'
         features_cf = model.module.get_logits(cf_features, model.module.fc.weight)
         features_orig = model.module.get_logits(original_features, model.module.fc.weight)
-        model.module.mode = args.base_mode  # Restore mode
+        model.module.mode = args.base_mode
 
         # Calculate causal invariance loss
         inv_loss = inv_criterion(features_orig, features_cf)
@@ -90,6 +84,7 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
         causal_loss = recon_loss + 0.1 * orthogonal_loss
 
         # Total loss
+        # loss = joint_loss + loss_moco + args.causal_weight * causal_loss + args.counterfactual_weight * inv_loss
         loss = joint_loss + args.causal_weight * causal_loss + args.counterfactual_weight * inv_loss
 
         # Collect style features if it is the last epoch
@@ -103,18 +98,15 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
         # Record loss values
         tl.add(loss.item())
         tl_joint.add(joint_loss.item())
-        tl_moco_global.add(loss_moco_global.item())
-        tl_moco_small.add(loss_moco_small.item())
-        tl_moco.add(loss_moco.item())
         tl_causal.add(causal_loss.item())
         tl_recon.add(recon_loss.item())
-        tl_inv.add(inv_loss.item()) 
+        tl_inv.add(inv_loss.item())
         ta.add(acc)
 
         # Display progress
         lrc = scheduler.get_last_lr()[0]
         tqdm_gen.set_description(
-            'Session 0, epo {},total={:.4f},joint={:.4f},'
+            'Session 0, epo {}, total={:.4f},joint={:.4f},'
             'causal={:.4f},inv={:.4f},acc={:.4f}'.format(
                 epoch, loss.item(), joint_loss.item(),
                 causal_loss.item(), inv_loss.item(), acc))
@@ -128,21 +120,21 @@ def base_train(model, trainloader, criterion, optimizer, scheduler, epoch, trans
     if epoch == args.epochs_base - 1 and len(style_features_list) > 0:
         # Concatenate all style features
         all_style_features = torch.cat(style_features_list, dim=0)
-        
+
         # Create save directory
         style_features_dir = os.path.join(args.save_path, 'style_features')
         os.makedirs(style_features_dir, exist_ok=True)
-        
+
         # Save style features
         style_features_path = os.path.join(style_features_dir, 'base_style_features.pkl')
         with open(style_features_path, 'wb') as f:
             pickle.dump(all_style_features, f)
-        
+
         print(f"Base class style features saved to: {style_features_path}")
         print(f"Shape of saved style features: {all_style_features.shape}")
 
-    return (tl.item(), tl_joint.item(), tl_moco.item(), tl_moco_global.item(),
-            tl_moco_small.item(), tl_causal.item(), tl_recon.item(), tl_inv.item(), ta.item())
+    return (tl.item(), tl_joint.item(),
+            tl_causal.item(), tl_recon.item(), tl_inv.item(), ta.item())
 
 
 def replace_base_fc(trainset, test_transform, data_transform, model, args):
@@ -154,7 +146,7 @@ def replace_base_fc(trainset, test_transform, data_transform, model, args):
     trainloader.dataset.transform = test_transform
     embedding_list = []
     label_list = []
-    
+    # data_list=[]
     with torch.no_grad():
         for i, batch in enumerate(trainloader):
             data, label = [_.cuda() for _ in batch]
@@ -167,7 +159,6 @@ def replace_base_fc(trainset, test_transform, data_transform, model, args):
 
             embedding_list.append(embedding.cpu())
             label_list.append(labels.cpu())
-            
     embedding_list = torch.cat(embedding_list, dim=0)
     label_list = torch.cat(label_list, dim=0)
 
@@ -314,16 +305,6 @@ def update_fc_ft(trainloader, data_transform, model, m, session, args):
                 # Restore mode
                 model.module.mode = args.base_mode
                 
-                # Calculate standard MoCo loss
-                _, output_global, output_small, target_global, target_small = model(im_cla=data_classify, im_q=data_query,
-                                                                      im_k=data_key, labels=joint_labels,
-                                                                      im_q_small=data_small, base_sess=False,
-                                                                      last_epochs_new=(epoch == args.epochs_new - 1))
-                
-                loss_moco_global = criterion(output_global, target_global)
-                loss_moco_small = criterion(output_small, target_small)
-                loss_moco = args.alpha * loss_moco_global + args.beta * loss_moco_small
-                
                 # Total loss: add causal invariance loss
                 loss = joint_loss + 0.1 * causal_inv_loss  
 
@@ -346,7 +327,6 @@ def test(model, testloader, epoch, transform, args, session):
             b = data.size()[0]
             data = transform(data)
             m = data.size()[0] // b
-            
             joint_preds = model(data)
             joint_preds = joint_preds[:, :test_class * m]
 
@@ -362,7 +342,6 @@ def test(model, testloader, epoch, transform, args, session):
 
         vl = vl.item()
         va = va.item()
-        
-    print('Epoch {}, test, loss={:.4f} acc={:.4f}'.format(epoch, vl, va))
+    print('epo {}, test, loss={:.4f} acc={:.4f}'.format(epoch, vl, va))
 
     return vl, va
