@@ -1,3 +1,5 @@
+import torch
+
 def rotation2():
     def _transform(images):
         size = images.shape[1:]
