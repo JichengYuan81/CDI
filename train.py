@@ -40,7 +40,7 @@ def get_command_line_parser():
     parser.add_argument('-base_mode', type=str, default='ft_cos')  # using cosine classifier
     parser.add_argument('-new_mode', type=str, default='avg_cos')  # using average data embedding and cosine classifier
 
-    # for SAVC
+   
     parser.add_argument('-moco_dim', default=128, type=int,
                         help='feature dimension (default: 128)')
     parser.add_argument('-moco_k', default=65536, type=int,
