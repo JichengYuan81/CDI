@@ -64,8 +64,8 @@ def get_command_line_parser():
     parser.add_argument('-auto_augment', type=int, default=[], nargs='+',
                         help='Apply auto-augment 50 % of times to the selcshuected crops')
     parser.add_argument('-fantasy', type=str, default='rotation', help='fantasy method to generate virtual classes')
-    parser.add_argument('-alpha', type=float, default=0.5, help='coefficient of the global contrastive loss')
-    parser.add_argument('-beta', type=float, default=0.5, help='coefficient of the local contrastive loss')
+    parser.add_argument('-alpha', type=float, default=0.2, help='coefficient of the global contrastive loss')
+    parser.add_argument('-beta', type=float, default=0.8, help='coefficient of the local contrastive loss')
 
     parser.add_argument('-start_session', type=int, default=0)
     parser.add_argument('-model_dir', type=str, default=MODEL_DIR, help='loading model parameter from a specific dir')
